@@ -8,7 +8,6 @@ const {
 const { download } = require("./utils/download");
 const { writeResult, getResult } = require("./utils/handleResultFile");
 const { coordToTile } = require("./utils/geo");
-const { log, error } = require("./utils/common");
 
 Array.prototype.unique = function() {
   return this.filter((value, index, self) => self.indexOf(value) === index)
@@ -87,7 +86,7 @@ const downloadAll = async () => {
     startCoords.bottomRight = coordToTile(startCoords.bottomRight.x, startCoords.bottomRight.y, startZoomLevel);
   }
 
-  log(`Downloading all tiles in bbox ((${startCoords.topLeft.x},${startCoords.topLeft.y}),(${startCoords.bottomRight.x},${startCoords.bottomRight.y})); zoom: ${startZoomLevel}`)
+  console.log(`downloading all tiles in bbox (${startCoords.topLeft},${startCoords.bottomRight}); zoom: ${startZoomLevel}`)
 
   const configsByZoomLevel = buildConfigsByZoomLevel(
     minZoomLevel,
@@ -95,43 +94,66 @@ const downloadAll = async () => {
     startCoords
   );
 
+  const cordArgs = [];
+
   for await (const { zoomLevel: z, coords } of configsByZoomLevel) {
     const topLeftCoords = coords.topLeft;
     const bottomRightCoords = coords.bottomRight;
 
     const XCoords = fillCoordsArr(topLeftCoords.x, bottomRightCoords.x);
     const YCoords = fillCoordsArr(topLeftCoords.y, bottomRightCoords.y);
-    const totaltiles = XCoords.length * YCoords.length;
-    let count = 0;
+
     for (const x of XCoords) {
       for (const y of YCoords) {
         const locationParams = { z, x, y };
-        const tileId = [z, x, y].join("-");
-
-        let providers = (result[tileId] && result[tileId].providers) || [];
-
-        try {
-          const ex = await Promise.all(
-            resources.map((resource) => download(resource, locationParams))
-          );
-          for (const e of ex) {
-            providers.push(e.resource.name);
-          }
-          count++;
-          log(`Done: ${totaltiles}/${count} (${((count/totaltiles)*100).toFixed(2)}%)`)
-        } catch (err) {
-          error(err);
-        }
-
-        result[tileId] = {
-          id: tileId,
-          providers: providers.unique(),
-        };
+        resources.map((resource) => {
+          cordArgs.push({ locationParams, resource });
+        });
       }
     }
   }
 
-  writeResult(result);
+  console.log(`items length ${cordArgs.length}`);
+
+  const chunkSize = 100;
+  const chunks = Math.ceil(cordArgs.length / chunkSize);
+  let chunkN = 0;
+
+  let chunkItems = 0;
+  let chunk = [];
+  for (let i = 0; i < cordArgs.length; i++) {
+    chunk.push(cordArgs[i]);
+    chunkItems++;
+
+    if (chunkItems > chunkSize) {
+      const ex = await Promise.all(
+        chunk.map(({ locationParams, resource }) =>
+          download(resource, locationParams)
+        )
+      );
+      chunkItems = 0;
+      chunkN++;
+      chunk = [];
+
+      const {z, x, y} = cordArgs;
+      const tileId = [z, x, y].join("-");
+
+      let providers = (result[tileId] && result[tileId].providers) || [];
+
+      for (const e of ex) {
+        providers.push(e.resource.name);
+      }
+      result[tileId] = {
+        id: tileId,
+        providers: providers.unique(),
+      };
+      writeResult(result);
+      process.stdout.write(`\rfinished chunk ${(chunkN / chunks * 100).toFixed(2)}% ${chunkN}/${chunks}`);
+    }
+
+  }
+
+  console.log("DONE");
 };
 
 downloadAll();
