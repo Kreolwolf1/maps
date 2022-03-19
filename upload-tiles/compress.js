@@ -115,7 +115,7 @@ const main = async () => {
       const folders = await getFolders(`${gsPath}/${zoomFolder}`);
       for(const yFolder of folders) {
         const files = await getDirectories(`${gsPath}/${zoomFolder}/${yFolder}`);
-        await compressFiles(files, 60, '.png');
+        await compressFiles(files, 60, '.jpeg');
       }
     }
   } catch(e) {
