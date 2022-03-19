@@ -37,34 +37,39 @@ const downloadAll = async () => {
     startCoords,
     coordsLevel
   );
-
   if (!coordsLevel) {
     coordsLevel = startZoomLevel;
   }
 
+  let totaltiles = 0;
+  let count = 0;
+  let failed = 0;
+
   for await (const { zoomLevel: z, coords } of configsByZoomLevel) {
+    if (params.skippedLevels && params.skippedLevels.indexOf(z) >= 0) {
+      continue;
+    }
     const topLeftCoords = coords.topLeft;
     const bottomRightCoords = coords.bottomRight;
 
     const XCoords = fillCoordsArr(topLeftCoords.x, bottomRightCoords.x);
     const YCoords = fillCoordsArr(topLeftCoords.y, bottomRightCoords.y);
-    const totaltiles = XCoords.length * YCoords.length;
-    let count = 0;
+    totaltiles += XCoords.length * YCoords.length;
     for (const x of XCoords) {
       for (const y of YCoords) {
         const locationParams = { z, x, y };
-        const tileId = [z, x, y].join("-");
 
         try {
-          const ex = await Promise.all(
+          await Promise.all(
             resources
             .map((resource) => download(resource, locationParams))
           );
         } catch (err) {
+          failed++;
           error(err);
         } finally {
           count++;
-          log(`Done: (${((count/totaltiles)*100).toFixed(2)}%) ${count}/${totaltiles}`)
+          log(`Done: (${((count/totaltiles)*100).toFixed(2)}%) ${count}/${totaltiles}; failed: ${failed}`)
         }
 
       }
