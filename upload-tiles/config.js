@@ -37,20 +37,20 @@ const params = {
       })(),
       fileExt: "png",
     },
-    // {
-    //  name: "GS",
-    //  downloadUrlPatter: ({ z, y, x }) =>
-    //    `https://khms0.googleapis.com/kh?v=${GS_API_VERSION}&z=${z}&x=${x}&y=${y}`,
-    //  fileExt: "jpeg",
-    // },
+    {
+     name: "GS",
+     downloadUrlPatter: ({ z, y, x }) =>
+       `https://khms0.googleapis.com/kh?v=${GS_API_VERSION}&z=${z}&x=${x}&y=${y}`,
+     fileExt: "jpeg",
+    },
      {
-//       name: "COSM",
-//       downloadUrlPatter: (() => {
-//         const cdn = new RoundRobin(['a', 'b', 'c'])
-//         return ({ z, y, x }) => `https://${cdn.next()}.tile-cyclosm.openstreetmap.fr/cyclosm/${z}/${x}/${y}.png`
-//       })(),
-//       fileExt: "png",
-//     },
+      name: "COSM",
+      downloadUrlPatter: (() => {
+        const cdn = new RoundRobin(['a', 'b', 'c'])
+        return ({ z, y, x }) => `https://${cdn.next()}.tile-cyclosm.openstreetmap.fr/cyclosm/${z}/${x}/${y}.png`
+      })(),
+      fileExt: "png",
+    },
     {
       name: "OSM",
       downloadUrlPatter: (() => {
@@ -61,11 +61,11 @@ const params = {
     },
   ],
   minZoomLevel: 5,
-  startZoomLevel: 18,
+  startZoomLevel: 17,
   coordsLevel: 18,
   delay: 0,// milliseconds
   // please put you coords config here:
-  startCoords: undefined,
+  startCoords: {"topLeft":{"x":147591,"y":88252},"bottomRight":{"x":147920,"y":90313}},
   // for instance:
   // startCoords: {
   //   topLeft: { x: 50.465670, y: 30.362977 },
