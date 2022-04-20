@@ -152,3 +152,16 @@
     position: absolute;
     top: -16pt;   
 }
+
+#change-layer.only-web .change-layer.layer-local{
+    display: none;
+}
+#change-layer.only-web .change-layer.layer-web{
+    display: block;
+}
+#change-layer.only-local .change-layer.layer-local{
+    display: block;
+}
+#change-layer.only-local .change-layer.layer-web{
+    display: none;
+}

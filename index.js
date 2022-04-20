@@ -178,7 +178,11 @@ $(function() {
     render() {
       const controlsBar = $('.controls-bar');
       controlsBar.append(`
-        <div class="ctrl btn-group layers-control" id="change-layer" data-toggle="buttons">
+        <div class="ctrl btn-group layers-control only-local" id="change-layer" data-toggle="buttons">
+        </div>
+        <div class="ctrl btn-group layers-control">
+          <button type="button" id="show-local" class="btn btn-primary btn-sm active">Офлайн</button>
+          <button type="button" id="show-web" class="btn btn-primary btn-sm">Онлайн</button>
         </div>
 
         <div class="ctrl btn-group layers-control">
@@ -234,8 +238,10 @@ $(function() {
         if (layer.getVisible()) {
           checked = 'checked'
         }
+        const buttonClasses = [ "btn", "btn-primary", "change-layer", "btn-sm" ];
+        buttonClasses.push(layer.get('local') === true ? 'layer-local' : 'layer-web');
         $('.layers-control#change-layer').append(`
-          <label class="btn btn-primary change-layer btn-sm">
+          <label class="${buttonClasses.join(' ')}">
             <input type="radio" name="layers" id="${index}" ${checked}> ${this.__getLayerDisplayName(layer)}
           </label>
         `)
@@ -277,6 +283,19 @@ $(function() {
       $('.ctrl #hide').on('click', this.hideAllMarkers.bind(this));
 
       $('.measure-control #measure').on('click', this.toggleMeasureMarkerMode.bind(this));
+
+      $('#show-local').on('click', function() {
+        $('.layers-control#change-layer').removeClass('only-web');
+        $('.layers-control#change-layer').addClass('only-local');
+        $('#show-web').removeClass('active');
+        $('#show-local').addClass('active');
+      });
+      $('#show-web').on('click', function() {
+        $('.layers-control#change-layer').removeClass('only-local');
+        $('.layers-control#change-layer').addClass('only-web');
+        $('#show-local').removeClass('active');
+        $('#show-web').addClass('active');
+      });
 
       this.mapFront.onMouseMove(this.renderCoords.bind(this));
     }
