@@ -386,6 +386,7 @@ $(function() {
         this.saveMarkerPopover(marker);
         this.addPopover(marker, true);
         this.setNoneEditMode(marker);
+        $(`#marker-${marker.id} .title`).html(marker.title);
       }).bind(this));
 
 
@@ -498,26 +499,29 @@ $(function() {
       this.createMarker({ coords, colorId: this.selectedColor.id });
     }
 
-    showMarker(coords, colorId) {
+    showMarker(id, options) {
       const jEl = $('#marker').clone().removeAttr('id');
       let color = this.selectedColor;
 
-      if (colorId) {
-        color = _.find(this.colors, c => c.id == colorId);
+      if (options.colorId) {
+        color = _.find(this.colors, c => c.id == options.colorId);
       }
 
       jEl.addClass(color.colorClass);
+      jEl.html(`<span class='title'>${options.title}</span>`)
+      jEl.attr('id', `marker-${id}`)
 
       const el = jEl[0];
-      const markerMap = this.mapFront.createMarker(el, coords);
+      const markerMap = this.mapFront.createMarker(el, options.coords);
 
       return markerMap;
     }
 
     createMarker(options, isSaved) {
-      const markerMap = this.showMarker(options.coords, options.colorId);
+      const id = uuid.v4();
+      const markerMap = this.showMarker(id, options);
       const marker = {
-        id: uuid.v4(),
+        id: id,
         coords: options.coords,
         colorId: options.colorId,
         title: options.title,
