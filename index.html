@@ -11,20 +11,64 @@
     <script src="./vendor/js/uuid.min.js"></script>
     <script src="./vendor/js/bootstrap.min.js"></script>
     <script src="./vendor/js/openlayers.min.js"></script>
+    <script src="./vendor/js/olms.js"></script>
     <script src="./vendor/js/lodash.min.js"></script>
     <script src="./vendor/js/proj4.js"></script>
+    <script src="./style.js"></script>
     <script src="./config.js"></script>
 
     <title>Разом і до кінця</title>
   </head>
   <body>
+    <div class="modal" tabindex="-1" id="gotomodal">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Перейти</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form class="row g-3">
+              <fieldset class="col-xs-12">
+                <legend class="col-form-label col-sm-6 pt-0">Тип координат</legend>
+                <div class="col-sm-10">
+                  <div class="form-check">
+                    <input class="form-check-input" type="radio" name="coord_type" id="coords_wgs84" value="wgs84" checked>
+                    <label class="form-check-label" for="coords_wgs84">
+                      WGS84
+                    </label>
+                  </div>
+                  <div class="form-check">
+                    <input class="form-check-input" type="radio" name="coord_type" id="coords_ck42" value="ck42">
+                    <label class="form-check-label" for="coords_ck42">
+                      CK42
+                    </label>
+                  </div>
+                </div>
+              </fieldset>
+              <div class="col-md-6">
+                <label for="lat" class="form-label">Lat</label>
+                <input type="text" class="form-control" id="goto_lat" name="goto_lat">
+              </div>
+              <div class="col-md-6">
+                <label for="lon" class="form-label">Lon</label>
+                <input type="text" class="form-control" id="goto_lon" name="goto_lon">
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрити</button>
+            <button type="button" class="btn btn-primary">Перейти</button>
+          </div>
+        </div>
+      </div>
+    </div>
     <div class="controls-bar">
     </div>
 
     <div class="parent">
       <div id="map" class="map"></div>
     </div>
-
     <script src="./index.js"></script>
   </body>
 </html>

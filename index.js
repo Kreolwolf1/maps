@@ -219,6 +219,7 @@ $(function() {
 
         <div class="ctrl btn-group marker-color-control" id="change-marker-color" data-toggle="buttons">
         </div>
+        <div class="btn btn-primary btn-sm" id="opengotomodal">ПЕРЕЙТИ ДО</div>
       `);
 
       _.forEach(this.markers.colors, (markerColor, index) => {
@@ -295,6 +296,10 @@ $(function() {
         $('.layers-control#change-layer').addClass('only-web');
         $('#show-local').removeClass('active');
         $('#show-web').addClass('active');
+      });
+      var gotomodal = new bootstrap.Modal(document.getElementById('gotomodal'), { keyboard: false });
+      $("#opengotomodal").on('click', function(){
+        gotomodal.show();
       });
 
       this.mapFront.onMouseMove(this.renderCoords.bind(this));
@@ -458,8 +463,8 @@ $(function() {
       const popoverContent = $(`#${marker.id}.popover-content`);
       const popoverEl = popoverContent.parents('.popover');
 
-      popoverEl.find('.popover-content-top').html(`${marker.content || 'Ввeдіть контент'}`);
-      popoverEl.find('.popover-header').html(`${marker.title || 'Ввeдіть тайтл'}`);
+      popoverEl.find('.popover-content-top').html(`${marker.content || 'Введіть опис'}`);
+      popoverEl.find('.popover-header').html(`${marker.title || 'Введіть назву'}`);
 
       popoverEl.find('.edit-mode').hide();
       popoverEl.find('.non-edit-mode').show();
@@ -573,7 +578,7 @@ $(function() {
       const content = `
         <div id='${marker.id}' class='popover-id popover-content'>
           <div class='popover-content-top'>
-            ${marker.content || 'Ввeдіть контент'}
+            ${marker.content || 'Введіть опис'}
           </div>
           <div class='popover-content-bottom'>
             <hr>
@@ -612,7 +617,7 @@ $(function() {
         this.showPopover(marker);
       }
 
-      $(markerMapElement).attr('data-bs-original-title', marker.title || 'Ввeдіть тайтл');
+      $(markerMapElement).attr('data-bs-original-title', marker.title || 'Введіть назву');
       $(markerMapElement).on('click', (function(e) {
         this.showPopover(marker);
       }).bind(this));
