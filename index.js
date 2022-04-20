@@ -508,7 +508,7 @@ $(function() {
       }
 
       jEl.addClass(color.colorClass);
-      jEl.html(`<span class='title'>${options.title}</span>`)
+      jEl.html(`<span class='title'>${options.title || ''}</span>`)
       jEl.attr('id', `marker-${id}`)
 
       const el = jEl[0];
