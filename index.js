@@ -4,8 +4,9 @@ $(function() {
   proj4.defs("EPSG:28407","+proj=tmerc +lat_0=0 +lon_0=39 +k=1 +x_0=7500000 +y_0=0 +ellps=krass +towgs84=23.57,-140.95,-79.8,0,0.35,0.79,-0.22 +units=m +no_defs");
 
   class MapFront {
+    LOCAL_STORAGE_KEY = 'maps-position';
     constructor(config) {
-      this.layers = config.layers.map(layer => new ol.layer.Tile(layer));
+      this.layers = config.layers.map(layer => (layer instanceof ol.layer.Tile || layer instanceof ol.layer.VectorTile) ? layer : new ol.layer.Tile(layer));
       this.center = config.center;
       this.defaultZoom = config.zoom;
 
@@ -16,14 +17,12 @@ $(function() {
       let zoom = this.defaultZoom;
       let center = this.center;
       let activeLayer = '';
-      if (window.location.hash !== '') {
-        const hash = window.location.hash.replace('#map=', '');
-        const parts = hash.split('/');
-        if (parts.length === 4) {
-          activeLayer = parts[0];
-          zoom = parseFloat(parts[1]);
-          center = [parseFloat(parts[2]), parseFloat(parts[3])];
-        }
+      const loadedState = localStorage.getItem(this.LOCAL_STORAGE_KEY);
+      if (loadedState) {
+        const state = JSON.parse(loadedState);
+        zoom = state.zoom;
+        center = state.center;
+        activeLayer = state.activeLayer;
       }
       if (this.layers.filter(l=>l.getVisible()).shift().A.displayName !== activeLayer) {
         for(let i = 0; i < this.layers.length; i++){
@@ -47,7 +46,8 @@ $(function() {
         ],
         view: new ol.View({
           center: ol.proj.transform(center, 'EPSG:4326', 'EPSG:3857'),
-          zoom: zoom
+          zoom: zoom,
+          maxZoom: 17,
         }),
       });
 
@@ -55,38 +55,19 @@ $(function() {
         placement: 'right',
         container: '#map',
       });
-
-      let shouldUpdate = true;
-      const view = map.getView();
       this.updatePermalink = function () {
-        if (!shouldUpdate) {
-          // do not update the URL when the view was changed in the 'popstate' handler
-          shouldUpdate = true;
-          return;
-        }
-
-        const center = ol.proj.transform(view.getCenter(), 'EPSG:3857', 'EPSG:4326');
-        const activeLayer = map.getAllLayers().filter(l=>l.getVisible()).shift().A.displayName;
-        const hash = '#map=' + [activeLayer, view.getZoom().toFixed(2), center[0].toFixed(2), center[1].toFixed(2)].join('/');
+        const activeLayer = this.map.getAllLayers().filter(l=>l.getVisible()).shift().A.displayName;
+        const center = ol.proj.transform(this.map.getView().getCenter(), 'EPSG:3857', 'EPSG:4326');
+        const zoom = this.map.getView().getZoom();
         const state = {
-          zoom: view.getZoom(),
-          center: view.getCenter(),
-        };
-        window.history.pushState(state, 'map', hash);
+          zoom,
+          center,
+          activeLayer,
+        }
+        localStorage.setItem(this.LOCAL_STORAGE_KEY, JSON.stringify(state));
       };
 
-      map.on('moveend', this.updatePermalink);
-
-      // restore the view state when navigating through the history, see
-      // https://developer.mozilla.org/en-US/docs/Web/API/WindowEventHandlers/onpopstate
-      window.addEventListener('popstate', function (event) {
-        if (event.state === null) {
-          return;
-        }
-        map.getView().setCenter(event.state.center);
-        map.getView().setZoom(event.state.zoom);
-        shouldUpdate = false;
-      });
+      map.on('moveend', this.updatePermalink.bind(this));
       this.map = map;
       return this.map;
     }
