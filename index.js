@@ -24,9 +24,9 @@ $(function() {
         center = state.center;
         activeLayer = state.activeLayer;
       }
-      if (this.layers.filter(l=>l.getVisible()).shift().A.displayName !== activeLayer) {
+      if (activeLayer && this.layers.filter(l=>l.getVisible()).shift().get('id') !== activeLayer) {
         for(let i = 0; i < this.layers.length; i++){
-          this.layers[i].setVisible(this.layers[i].A.displayName === activeLayer);
+          this.layers[i].setVisible(this.layers[i].get('id') === activeLayer);
         }
       }
       const map = new ol.Map({
@@ -56,7 +56,7 @@ $(function() {
         container: '#map',
       });
       this.updatePermalink = function () {
-        const activeLayer = this.map.getAllLayers().filter(l=>l.getVisible()).shift().A.displayName;
+        const activeLayer = this.map.getAllLayers().filter(l=>l.getVisible()).shift().get('id') || '';
         const center = ol.proj.transform(this.map.getView().getCenter(), 'EPSG:3857', 'EPSG:4326');
         const zoom = this.map.getView().getZoom();
         const state = {
@@ -172,7 +172,7 @@ $(function() {
     }
 
     __getLayerDisplayName(layer) {
-      return layer.A.displayName;
+      return layer.get('displayName');
     }
 
     render() {
