@@ -36,7 +36,7 @@ $(function() {
         controls: [
           new ol.control.Rotate(),
           new ol.control.FullScreen({
-            tipLabel: "На веcь екран"
+            tipLabel: "На весь екран"
           }),
           new ol.control.Zoom({
             zoomInTipLabel: "Більше",
@@ -95,6 +95,31 @@ $(function() {
       const coordsWgs84 = this.mapToWgs84(coords);
       const projectionTo = this.getProjectionForCK42(coordsWgs84);
       return proj4('EPSG:4326', projectionTo).forward(coordsWgs84);
+    }
+
+    getProjectionFromCK42(coords) {
+      if (coords[0] <= 5617947.25) {
+        return 'EPSG:28405'
+      }
+
+      if (coords[0] > 6260792.68 && coords[0] <= 6614538.36) {
+        return 'EPSG:28406'
+      }
+
+      if (coords[0] > 7249337.68) {
+        return 'EPSG:28407'
+      }
+    }
+
+    ck42toWgs84(coords) {
+      const projection = this.getProjectionFromCK42(coords);
+      const coordsWgs84 = proj4(projection, 'EPSG:4326').forward(coords);
+      return coordsWgs84;
+    }
+
+    goto(coords) {
+      const size = this.map.getSize();
+      this.map.getView().centerOn(ol.proj.transform(coords, 'EPSG:4326', 'EPSG:3857'), size, [570, 500]);
     }
 
     addControl(elem) {
@@ -276,6 +301,21 @@ $(function() {
       }
     }
 
+    jump(e) {
+      e.preventDefault();
+      const data = Object.fromEntries(new FormData(e.target).entries());
+      const type = data['coord_type'].trim();
+      const lat = data['goto_lat'].trim();
+      const lon = data['goto_lon'].trim();
+      let coords = [];
+      if (type === 'wgs84') {
+        coords = [parseFloat(lon), parseFloat(lat)];
+      } else if (type === 'ck42') {
+        coords = this.mapFront.ck42toWgs84([lon, lat]);
+      }
+      this.mapFront.goto(coords);
+    }
+
     addEvents() {
       $('.layers-control#change-layer label').on('click', this.changeLayer.bind(this));
       $('.marker-color-control#change-marker-color label').on('click', this.changeMarkerColor.bind(this));
@@ -297,6 +337,7 @@ $(function() {
         $('#show-local').removeClass('active');
         $('#show-web').addClass('active');
       });
+      $('#gotomodal form').on('submit', this.jump.bind(this));
       var gotomodal = new bootstrap.Modal(document.getElementById('gotomodal'), { keyboard: false });
       $("#opengotomodal").on('click', function(){
         gotomodal.show();
