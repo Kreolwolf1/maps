@@ -33,7 +33,7 @@ const params = {
       //to reduce bombarding - round-robin on cdn servers
       downloadUrlPatter: (() => {
         const cdn = new RoundRobin([1, 2, 3, 4])
-        return ({ z, y, x }) => `https://${cdn.next()}.aerial.maps.ls.hereapi.com/maptile/2.1/maptile/newest/satellite.day/${z}/${x}/${y}/256/jpg?apiKey=t_kKKAHgEZ-SCa-v08N8xCchEK_wxxp7dFAmEOpi9hs`
+        return ({ z, y, x }) => `https://${cdn.next()}.aerial.maps.ls.hereapi.com/maptile/2.1/maptile/newest/satellite.day/${z}/${x}/${y}/256/jpg?apiKey=XymxvZ_r1pulL7cA5r9JZ9Rr_m_wOzjDAb4VCm-w1gA`
       })(),
       fileExt: "png",
     },
