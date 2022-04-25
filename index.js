@@ -26,7 +26,7 @@ $(function() {
       }
       if (activeLayer && this.layers.filter(l=>l.getVisible()).shift().get('id') !== activeLayer) {
         for(let i = 0; i < this.layers.length; i++){
-          this.layers[i].setVisible(this.layers[i].get('id') === activeLayer);
+          this.layers[i].setVisible((this.layers[i].get('id') === activeLayer) || this.layers[i].get('always_visible'));
         }
       }
       const map = new ol.Map({
@@ -147,7 +147,7 @@ $(function() {
     }
 
     setLayer(index) {
-      _.forEach(this.layers, function(layer) { layer.setVisible(false); });
+      _.forEach(this.layers, function(layer) { layer.setVisible(layer.get('always_visible')); });
       this.layers[index].setVisible(true);
       this.updatePermalink();
     }
