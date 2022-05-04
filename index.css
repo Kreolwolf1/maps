@@ -28,6 +28,10 @@
     margin-right: 35px;
 }
 
+.controls-bar input {
+    font-weight:bold;
+}
+
 .ctrl {
     float: left;
     margin-left: 5px;
@@ -150,7 +154,7 @@
     color: #000;
     text-shadow: -1px -1px 0 #FFF, 1px -1px 0 #FFF, -1px 1px 0 #FFF, 1px 1px 0 #FFF;
     position: absolute;
-    top: -16pt;   
+    top: -16pt;
 }
 
 #change-layer.only-web .change-layer.layer-local{

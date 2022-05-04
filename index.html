@@ -45,15 +45,16 @@
                     </div>
                   </div>
                 </fieldset>
+
                 <fieldset class="col-xs-12">
                   <div class="row">
                     <div class="col-md-6">
                       <label for="lat" class="form-label">Lat</label>
-                      <input type="text" class="form-control" id="goto_lat" name="goto_lat">
+                      <input type="text" class="form-control" id="goto_lat" name="goto_lat" input-mask="__-_____">
                     </div>
                     <div class="col-md-6">
                       <label for="lon" class="form-label">Lon</label>
-                      <input type="text" class="form-control" id="goto_lon" name="goto_lon">
+                      <input type="text" class="form-control" id="goto_lon" name="goto_lon" input-mask="__-_____">
                     </div>
                   </div>
                 </fieldset>
@@ -74,5 +75,6 @@
       <div id="map" class="map"></div>
     </div>
     <script src="./index.js"></script>
+    <script src="./vendor/js/inputMask.js" data-autoinit="true"></script>
   </body>
 </html>
