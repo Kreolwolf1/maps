@@ -346,17 +346,17 @@ $(function() {
       var gotomodal = new bootstrap.Modal(document.getElementById('gotomodal'), { keyboard: false });
 
       $("#coords_ck42").on('click', function() {
-        $("#goto_lat").mask("99-99999");
-        $("#goto_lon").mask("99-99999");
+        $("#goto_lat").inputmask("99-99999");
+        $("#goto_lon").inputmask("99-99999");
       });
       $("#coords_wgs84").on('click', function() {
-        $("#goto_lat").mask("99.999999");
-        $("#goto_lon").mask("99.999999");
+        $("#goto_lat").inputmask("99.999999");
+        $("#goto_lon").inputmask("99.999999");
       });
 
       $("#opengotomodal").on('click', function() {
-        $("#goto_lat").mask("99-99999");
-        $("#goto_lon").mask("99-99999");
+        $("#goto_lat").inputmask("99-99999");
+        $("#goto_lon").inputmask("99-99999");
 
         gotomodal.show();
       });
